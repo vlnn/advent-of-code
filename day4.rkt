@@ -37,4 +37,29 @@
        (rule3? x)
        (rule4? x)))
 
+(display "The first answer:")
 (length (filter combine-rules (range 100000 999999 1)))
+
+(define (split-by lst n)
+  (if (> (length lst) 2)
+       (cons (take lst n) (split-by (cdr lst) n))
+       '() ))
+
+(check-equal? (split-by '(1 2 3) 2) '((1 2)))
+(check-equal? (split-by '(1 2 3) 3) '((1 2 3)))
+(check-equal? (split-by '(1 2 3 4) 2) '((1 2) (2 3) (3 4)))
+
+(define (rule5? x)
+  (split-by (digits x) 2)
+  #t)
+
+(check-equal? (rule5? 112233) #t)
+; (check-equal? (rule5? 123444) #f)
+(check-equal? (rule5? 111223) #t)
+
+(define (combine-rules-expanded x)
+  (and (combine-rules x)
+       (rule5? x)))
+
+(display "The second answer:")
+(length (filter combine-rules-expanded (range 100000 999999 1)))

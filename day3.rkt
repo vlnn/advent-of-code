@@ -1,15 +1,20 @@
 #lang racket
 ; solves https://adventofcode.com/2019/day/3
 
-(require megaparsack megaparsack/text data/monad data/applicative)
+(require megaparsack megaparsack/text
+         data/monad
+         data/applicative
+         control)
 
 (provide test-answer
          current-position
          eval-direction
          get-direction
          add-lists
+         mult-lists
          route-wire
          calc-length
+         expand-route
          direction/p)
 
 (define test-wiring
@@ -26,6 +31,12 @@
       empty
       (cons (+ (car a) (car b))
             (add-lists (cdr a) (cdr b)))))
+
+(define (mult-lists a b)
+  (if (empty? a)
+      empty
+      (cons (* (car a) (car b))
+            (mult-lists (cdr a) (cdr b)))))
 
 (define (eval-direction direct)
   (case direct
@@ -48,4 +59,14 @@
 
 (define (calc-length x) (apply + x))
 
-(define (route-wire x) '((1 0) (2 0)))
+(define ( a b (result '()))
+  (apply (+) (list (list a b))))
+
+(define (expand-route list count)
+  (for*/list ([dirs (make-list count list)]
+              [counts (range 1 count 1)])
+             (apply add-lists dirs)
+            ))
+
+(define (route-wire x)
+  (expand-route (car (eval-direction x) (cdr x))))
