@@ -1,6 +1,5 @@
 #lang racket
 (require rackunit)
-(provide interpret get-current-opcode interpret-add interpret-mult next reset next2)
 
 (define pc 0)
 (define program 0)
@@ -56,11 +55,19 @@
 (module+ test
   (check-equal? (interpret-mult test-program2) test-answer2))
 
+(define (interpret-save source)
+  (next2))
+
+(define (interpret-disp source)
+  (next2))
+
 (define (interpret source)
   (begin
     (case (get-current-opcode source)
       [(1) (interpret (begin (set! source (interpret-add source)) (next) source))]
       [(2) (interpret (begin (set! source (interpret-mult source)) (next) source))]
+      [(3) (interpret (begin (set! source (interpret-save source)) (next2) source))]
+      [(4) (interpret (begin (set! source (interpret-disp source)) (next2) source))]
       [(99) source]
       )
     )
